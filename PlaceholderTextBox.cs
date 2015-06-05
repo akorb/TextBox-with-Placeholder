@@ -1,9 +1,7 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing;
-using System.Windows.Forms;
 
-namespace Demo
+namespace System.Windows.Forms
 {
     /// <summary>
     /// Represents a Windows text box control with placeholder.
@@ -22,10 +20,7 @@ namespace Demo
         [Browsable(false)]
         public bool IsPlaceholderActive
         {
-            get
-            {
-                return _isPlaceholderActive;
-            }
+            get { return _isPlaceholderActive; }
             private set
             {
                 if (_isPlaceholderActive == value) return;
@@ -209,18 +204,11 @@ namespace Demo
                   });
         }
 
-        protected override void OnGotFocus(EventArgs e)
-        {
-            // Without this line it would highlight the placeholder when getting focus
-            Select(0, 0);
-            base.OnGotFocus(e);
-        }
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             // When you click on the placerholderTextBox and the placerholder is active, jump to first position
             if (IsPlaceholderActive)
-                Reset();
+                Select(0, 0);
 
             base.OnMouseDown(e);
         }
