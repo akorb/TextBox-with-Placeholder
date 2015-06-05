@@ -11,7 +11,7 @@ namespace System.Windows.Forms
         #region Properties
 
         string _placeholderText = DEFAULT_PLACEHOLDER;
-        bool _isPlaceholderActive;
+        bool _isPlaceholderActive = true;
 
 
         /// <summary>
@@ -57,18 +57,11 @@ namespace System.Windows.Forms
         {
             get
             {
-                // Check 'IsPlaceholderActive' to avoid this if-clause when the text is the same as the placeholder but actually it's not the placeholder.
-                // Check 'base.Text == Placeholder' because in some cases IsPlaceholderActive changes too late although it isn't the placeholder anymore.
-                // If you want to get the Text and it still contains the placeholder, an empty string will return.
-                if (IsPlaceholderActive && base.Text == PlaceholderText)
-                    return "";
-
                 return base.Text;
             }
             set
             {
                 base.Text = value;
-                Select(value.Length, 0);
             }
         }
 
@@ -81,7 +74,7 @@ namespace System.Windows.Forms
             {
                 // We have to differentiate whether the system is asking for the ForeColor to draw it
                 // or the developer is asking for the color.
-                if (IsPlaceholderActive && Environment.StackTrace.Contains("System.Windows.Forms.Control.InitializeDCForWmCtlColor(IntPtr dc, Int32 msg)"))
+                if (IsPlaceholderActive)
                     return Color.LightGray;
 
                 return base.ForeColor;
@@ -239,15 +232,15 @@ namespace System.Windows.Forms
         /// <summary>
         /// Initializes a new instance of the PlaceholderActiveChangedEventArgs class.
         /// </summary>
-        /// <param name="newValue">The new value of the IsPlaceholderInside Property.</param>
-        public PlaceholderActiveChangedEventArgs(bool newValue)
+        /// <param name="isActive">Specifies whether the placeholder is currently active.</param>
+        public PlaceholderActiveChangedEventArgs(bool isActive)
         {
-            NewValue = newValue;
+            IsActive = isActive;
         }
 
         /// <summary>
         /// Gets the new value of the IsPlaceholderActive property.
         /// </summary>
-        public bool NewValue { get; private set; }
+        public bool IsActive { get; private set; }
     }
 }
