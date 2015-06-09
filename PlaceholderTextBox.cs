@@ -101,8 +101,6 @@ namespace System.Windows.Forms
         {
             get
             {
-                // We have to differentiate whether the system is asking for the ForeColor to draw it
-                // or the developer is asking for the color.
                 if (IsPlaceholderActive)
                     return PlaceholderTextColor;
 
