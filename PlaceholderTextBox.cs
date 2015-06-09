@@ -55,6 +55,7 @@ namespace System.Windows.Forms
         [Browsable(false)]
         public override string Text
         {
+            // Only overriden to hide it from the designer.
             get
             {
                 return base.Text;
@@ -65,9 +66,37 @@ namespace System.Windows.Forms
             }
         }
 
+
+
+        Color _placeholderTextColor;
         /// <summary>
         /// Gets or sets the foreground color of the control.
         /// </summary>
+        [Description("The foreground color of this component, which is used to display the placeholder."), Category("Appearance"), DefaultValue(typeof(Color), "InactiveCaption")]
+        public Color PlaceholderTextColor
+        {
+            get { return _placeholderTextColor; }
+            set
+            {
+                if (_placeholderTextColor == value) return;
+                _placeholderTextColor = value;
+
+                // Force redraw to show new color in designer instantly
+                if (DesignMode)
+                    Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the foreground color of the control.
+        /// </summary>
+        [Description("The foreground color of this component, which is used to display text."), Category("Appearance"), DefaultValue(typeof(Color), "WindowText")]
+        public Color TextColor { get; set; }
+
+        /// <summary>
+        /// Do not access directly. Use TextColor.
+        /// </summary>
+        [Browsable(false)]
         public override Color ForeColor
         {
             get
@@ -75,13 +104,13 @@ namespace System.Windows.Forms
                 // We have to differentiate whether the system is asking for the ForeColor to draw it
                 // or the developer is asking for the color.
                 if (IsPlaceholderActive)
-                    return Color.LightGray;
+                    return PlaceholderTextColor;
 
-                return base.ForeColor;
+                return TextColor;
             }
             set
             {
-                base.ForeColor = value;
+                TextColor = value;
             }
         }
 
@@ -119,11 +148,10 @@ namespace System.Windows.Forms
         {
             // Through this line the default placeholder gets displayed in designer
             base.Text = PlaceholderText;
+            TextColor = SystemColors.WindowText;
+            PlaceholderTextColor = SystemColors.InactiveCaption;
 
             SubscribeEvents();
-
-            // Set Default
-            IsPlaceholderActive = true;
         }
 
         #endregion
@@ -176,20 +204,21 @@ namespace System.Windows.Forms
             // Run code with avoiding recursive call
             ActionWithoutTextChanged(delegate
                   {
-                      // If the Text is empty, insert placeholder and set cursor to to first position
+                      // If the Text is empty, insert placeholder and set cursor to the first position
                       if (String.IsNullOrEmpty(Text))
                       {
                           Reset();
                           return;
                       }
 
-                      // If the placeholder is active, revert state to a usual TextBox
-                      if (IsPlaceholderActive)
+                      // If the placeholder has been active but now the text changed,
+                      // set the textbox to its usual state
+                      if (IsPlaceholderActive && Text != PlaceholderText)
                       {
                           IsPlaceholderActive = false;
 
                           // Throw away the placeholder but leave the new typed char
-                          Text = Text.Replace(PlaceholderText, String.Empty);
+                          Text = Text[0].ToString();
 
                           // Set Selection to last position
                           Select(TextLength, 0);
