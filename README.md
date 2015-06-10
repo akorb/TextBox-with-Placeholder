@@ -18,8 +18,7 @@ followed by
 SendMessage(textBox1.Handle, EM_SETCUEBANNER, 0, "AnyPlaceholder");
 ```
 
-But this placeholder disappears as soon as the user focuses the textbox.
-And it's less to not customizable.
+With this method the placeholder color cannot be modified and it is not Mono compatible.
 
 I want to create a simple control which fulfilles this need.
 
