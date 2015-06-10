@@ -4,30 +4,36 @@
 In many cases it's very nice to use a placeholder instead of a label explaining the content.
 With HTML5 this is very easy and just a single attribute. Unfortunately, no .NET control provides any similar attribute.
 
-It actually can be done with a small hack:
+There are already two methods to do that.
 
-```C#
-private const int EM_SETCUEBANNER = 0x1501;
+#### Method 1
+Windows has a build in function for adding a placeholder. To use it, you have to use P/Invoke.    
+See StackOverflow: http://stackoverflow.com/questions/4902565/watermark-textbox-in-winforms
 
-[DllImport("user32.dll", CharSet = CharSet.Auto)]
-private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
-```
+This has a slightly different behavior than all other methods. If you click on the text box a second time, the placeholder disappears. If you then leave the control with the mouse, it will be shown again. No option to change this, but I doubt that's a problem.
 
-followed by
-```C#
-SendMessage(textBox1.Handle, EM_SETCUEBANNER, 0, "AnyPlaceholder");
-```
+#### Method 2
+This method is pretty clever. The placeholder actually isn't inside of the text box, it's just drawn over it.    
+See CodeProject: http://www.codeproject.com/Articles/319910/Custom-TextBox-with-watermark
 
-With this method the placeholder color cannot be modified and it is not Mono compatible.
+### Overview
 
-I want to create a simple control which fulfilles this need.
+| Method 1  | Method 2  | Mine |
+| --------- |-----------| -----|
+| Build-in  |Customizable|Customizable|
+|           |           | Mono |
 
-I have two destinations:
-* **Simplicity**   
-I implement it just like an actual Windows Forms control.
+**Mono support**     
+Method 1 obviously doesn't work with Mono because it uses the Win32 API.     
+Method 2 throws an exception.     
+Mine works almost perfect. Only the cursor is able to move through the placeholder with clicking. I don't know why yet.     
 
-* **Customizable**   
-You should be able to change the color of the placeholder.
+**Customizable**      
+Method 1 is 0% customizable.      
+Method 2 is very well customizable. Additional to mine it can set the placeholder color while focused.       
+Mine can do the same as Method 2, except setting the color while focused (is this really necessary?).
 
-
-Everybody is invited to contribute to this project, I would be very happy if this control is viewed by more than two eyes so it will work very well.
+**Recommendations**     
+Use Method 1 if you only want to support Windows, like its behavior and the default light grey color is fine.    
+Use Method 2 if you only want to support Windows and to set the color of the placeholder while focused.    
+Use mine method if you want to support cross plattform.
