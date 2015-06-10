@@ -25,6 +25,10 @@ namespace System.Windows.Forms
             {
                 if (_isPlaceholderActive == value) return;
 
+                // Disable operating system handling for mouse events
+                // This prevents the user to select the placeholder with mouse or double clicking
+                SetStyle(ControlStyles.UserMouse, value);
+
                 _isPlaceholderActive = value;
                 OnPlaceholderActiveChanged(value);
             }
@@ -56,14 +60,8 @@ namespace System.Windows.Forms
         public override string Text
         {
             // Only overriden to hide it from the designer.
-            get
-            {
-                return base.Text;
-            }
-            set
-            {
-                base.Text = value;
-            }
+            get { return base.Text; }
+            set { base.Text = value; }
         }
 
 
@@ -106,10 +104,7 @@ namespace System.Windows.Forms
 
                 return TextColor;
             }
-            set
-            {
-                TextColor = value;
-            }
+            set { TextColor = value; }
         }
 
 
@@ -148,6 +143,8 @@ namespace System.Windows.Forms
             base.Text = PlaceholderText;
             TextColor = SystemColors.WindowText;
             PlaceholderTextColor = SystemColors.InactiveCaption;
+
+            SetStyle(ControlStyles.UserMouse, true);
 
             SubscribeEvents();
         }
@@ -222,15 +219,6 @@ namespace System.Windows.Forms
                           Select(TextLength, 0);
                       }
                   });
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e)
-        {
-            // When you click on the placerholderTextBox and the placerholder is active, jump to first position
-            if (IsPlaceholderActive)
-                Select(0, 0);
-
-            base.OnMouseDown(e);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
