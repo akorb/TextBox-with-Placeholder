@@ -18,7 +18,7 @@ followed by
 SendMessage(textBox1.Handle, EM_SETCUEBANNER, 0, "AnyPlaceholder");
 ```
 
-But this placeholder has the same color as the user input and therefore is difficult to differentiate.
+But this placeholder disappears as soon as the user focuses the textbox.
 And it's less to not customizable.
 
 I want to create a simple control which fulfilles this need.
