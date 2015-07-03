@@ -1,4 +1,4 @@
-# PlaceholderTextBox
+# TextBox with Placeholder
 
 
 In many cases it's very nice to use a placeholder instead of a label explaining the content.
