@@ -232,8 +232,7 @@ namespace System.Windows.Forms
 
         protected virtual void OnPlaceholderActiveChanged(bool newValue)
         {
-            if (PlaceholderActiveChanged != null)
-                PlaceholderActiveChanged(this, new PlaceholderActiveChangedEventArgs(newValue));
+            PlaceholderActiveChanged?.Invoke(this, new PlaceholderActiveChangedEventArgs(newValue));
         }
 
         #endregion
