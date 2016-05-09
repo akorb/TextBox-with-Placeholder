@@ -60,7 +60,14 @@ namespace System.Windows.Forms
         public override string Text
         {
             // Only overriden to hide it from the designer.
-            get { return base.Text; }
+            get
+            {
+                // Check 'base.Text == Placeholder' because in some cases IsPlaceholderActive changes too late although it isn't the placeholder anymore.
+                if (IsPlaceholderActive && base.Text == PlaceholderText)
+                    return "";
+
+                return base.Text;
+            }
             set { base.Text = value; }
         }
 
