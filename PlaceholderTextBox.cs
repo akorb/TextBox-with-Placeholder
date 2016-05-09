@@ -213,7 +213,7 @@ namespace System.Windows.Forms
                           IsPlaceholderActive = false;
 
                           // Throw away the placeholder but leave the new typed text
-                          Text = Text.Substring(0, Text.Length - PlaceholderText.Length);
+                          Text = Text.Substring(0, TextLength - PlaceholderText.Length);
 
                           // Set Selection to last position
                           Select(TextLength, 0);
