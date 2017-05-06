@@ -8,7 +8,7 @@ There are already two methods to do that.
 
 #### Method 1
 Windows has a build in function for adding a placeholder. To use it, you have to use P/Invoke.    
-See StackOverflow: http://stackoverflow.com/questions/4902565/watermark-textbox-in-winforms
+See StackOverflow: http://stackoverflow.com/a/4902969
 
 This has a slightly different behavior than all other methods. If you click on the text box a second time, the placeholder disappears. If you then leave the control with the mouse, it will be shown again. No option to change this, but I doubt that's a problem.
 
