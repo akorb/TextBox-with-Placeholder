@@ -29,6 +29,11 @@ namespace System.Windows.Forms
                 // This prevents the user to select the placeholder with mouse or double clicking
                 SetStyle(ControlStyles.UserMouse, value);
 
+                // If text equals the placeholder and Reset is called, the actual text doesn't change but the IsPlaceholderActive does.
+                // Thus the style (Text or Placeholder) is not updated.
+                // Invalidate forces that
+                Invalidate();
+
                 _isPlaceholderActive = value;
                 OnPlaceholderActiveChanged(value);
             }
