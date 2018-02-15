@@ -163,9 +163,11 @@ namespace System.Windows.Forms
         /// </summary>
         public void Reset()
         {
+            if (IsPlaceholderActive) return;
+
             IsPlaceholderActive = true;
 
-            ActionWithoutTextChanged(() => Text = PlaceholderText);
+            Text = PlaceholderText;
             Select(0, 0);
         }
 
@@ -184,19 +186,17 @@ namespace System.Windows.Forms
 
         private void UpdateText()
         {
-            // If the Text is empty, insert placeholder and set cursor to the first position
-            if (String.IsNullOrEmpty(Text))
-            {
-                Reset();
-                return;
-            }
-
             // Run code with avoiding recursive call
             ActionWithoutTextChanged(delegate
             {
+                // If the Text is empty, insert placeholder and set cursor to the first position
+                if (!IsPlaceholderActive && String.IsNullOrEmpty(Text))
+                {
+                    Reset();
+                }
                 // If the placeholder has been active but now the text changed,
                 // set the textbox to its usual state
-                if (IsPlaceholderActive)
+                else if (IsPlaceholderActive && Text.Length > 0)
                 {
                     IsPlaceholderActive = false;
 
