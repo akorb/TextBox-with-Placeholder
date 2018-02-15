@@ -59,7 +59,6 @@ namespace System.Windows.Forms
         [Browsable(false)]
         public override string Text
         {
-            // Only overriden to hide it from the designer.
             get
             {
                 // Check 'base.Text == Placeholder' because in some cases IsPlaceholderActive changes too late although it isn't the placeholder anymore.
@@ -152,8 +151,6 @@ namespace System.Windows.Forms
             PlaceholderTextColor = SystemColors.InactiveCaption;
 
             SetStyle(ControlStyles.UserMouse, true);
-
-            SubscribeEvents();
         }
 
         #endregion
@@ -185,12 +182,31 @@ namespace System.Windows.Forms
             avoidTextChanged = false;
         }
 
-        /// <summary>
-        /// Subscribe necessary Events.
-        /// </summary>
-        private void SubscribeEvents()
+        private void UpdateText()
         {
-            TextChanged += PlaceholderTextBox_TextChanged;
+            // If the Text is empty, insert placeholder and set cursor to the first position
+            if (String.IsNullOrEmpty(Text))
+            {
+                Reset();
+                return;
+            }
+
+            // Run code with avoiding recursive call
+            ActionWithoutTextChanged(delegate
+            {
+                // If the placeholder has been active but now the text changed,
+                // set the textbox to its usual state
+                if (IsPlaceholderActive)
+                {
+                    IsPlaceholderActive = false;
+
+                    // Throw away the placeholder but leave the new typed text
+                    Text = Text.Substring(0, TextLength - PlaceholderText.Length);
+
+                    // Set selection to last position
+                    Select(TextLength, 0);
+                }
+            });
         }
 
         #endregion
@@ -198,34 +214,14 @@ namespace System.Windows.Forms
 
         #region Events
 
-        private void PlaceholderTextBox_TextChanged(object sender, EventArgs e)
+        protected override void OnTextChanged(EventArgs e)
         {
             // Check flag
             if (avoidTextChanged) return;
 
-            // Run code with avoiding recursive call
-            ActionWithoutTextChanged(delegate
-                  {
-                      // If the Text is empty, insert placeholder and set cursor to the first position
-                      if (String.IsNullOrEmpty(Text))
-                      {
-                          Reset();
-                          return;
-                      }
+            UpdateText();
 
-                      // If the placeholder has been active but now the text changed,
-                      // set the textbox to its usual state
-                      if (IsPlaceholderActive && Text != PlaceholderText)
-                      {
-                          IsPlaceholderActive = false;
-
-                          // Throw away the placeholder but leave the new typed text
-                          Text = Text.Substring(0, TextLength - PlaceholderText.Length);
-
-                          // Set Selection to last position
-                          Select(TextLength, 0);
-                      }
-                  });
+            base.OnTextChanged(e);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
