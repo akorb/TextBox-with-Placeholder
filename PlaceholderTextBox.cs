@@ -235,6 +235,12 @@ namespace System.Windows.Forms
             if (IsPlaceholderActive && (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Delete))
                 e.Handled = true;
 
+            if (IsPlaceholderActive && (e.KeyCode == Keys.A && e.Modifiers.HasFlag(Keys.Control)))
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+
             base.OnKeyDown(e);
         }
 
@@ -248,7 +254,7 @@ namespace System.Windows.Forms
 
         #region Avoid full text selection after first display with TabIndex = 0
 
-        // Base class has a selectionSet property, but its private.
+        // Base class has a selectionSet property, but it is private.
         // We need to shadow with our own variable. If true, this means
         // "don't mess with the selection, the user did it."
         bool selectionSet;
