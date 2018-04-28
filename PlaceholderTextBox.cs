@@ -197,16 +197,34 @@ namespace System.Windows.Forms
                 // If the Text is empty, insert placeholder and set cursor to the first position
                 if (!IsPlaceholderActive && String.IsNullOrEmpty(Text))
                 {
+                    // Allow default length for the placeholder
+                    // If we wouldn't do this, the placeholder will never disappear if
+                    // PlaceholderText.Length > MaxLength because the user cannot type anything
+                    MaxLength = 32767;
                     Reset();
                 }
                 // If the placeholder has been active but now the text changed,
                 // set the textbox to its usual state
                 else if (IsPlaceholderActive && Text.Length > 0)
                 {
+                    MaxLength = customMaxLength;
+
                     IsPlaceholderActive = false;
 
-                    // Throw away the placeholder but leave the new typed text
-                    Text = Text.Substring(0, TextLength - PlaceholderText.Length);
+                    // If you set Text programmatically it won't contain the PlaceholderText.
+                    // Thus we do not have to remove it
+                    // An issue is you cannot set a Text programmatically which has the structure [prefix][placeholder]
+                    // Note the missing suffix because we use "EndsWith"
+                    // Well, you can but the placeholder becomes removed, the prefix will be in the textbox
+                    // The reason is we cannot distinguish if a user typed something or the Text has been set programmatically
+                    if (Text.EndsWith(PlaceholderText))
+                    {
+                        Text = Text.Substring(0, TextLength - PlaceholderText.Length);
+                    }
+
+                    // If we copied something, trim it to the MaxLength
+                    if (Text.Length > MaxLength)
+                        Text = Text.Substring(0, MaxLength);
 
                     // Set selection to last position
                     Select(TextLength, 0);
@@ -218,6 +236,16 @@ namespace System.Windows.Forms
 
 
         #region Events
+
+        int customMaxLength;
+        protected override void OnCreateControl()
+        {
+            base.OnCreateControl();
+            // Save the user specified MaxLength
+            customMaxLength = MaxLength;
+            // Set to default for the placeholder
+            MaxLength = 32767;
+        }
 
         protected override void OnTextChanged(EventArgs e)
         {
