@@ -118,6 +118,10 @@ namespace System.Windows.Forms
             set { TextColor = value; }
         }
 
+        /// <summary>
+        /// Gets the length of text in the control.
+        /// </summary>
+        public override int TextLength => IsPlaceholderActive ? 0 : base.TextLength;
 
         /// <summary>
         /// Occurs when the value of the IsPlaceholderActive property has changed.
@@ -134,6 +138,9 @@ namespace System.Windows.Forms
         /// Specifies the default placeholder text.
         /// </summary>
         const string DEFAULT_PLACEHOLDER = "<Input>";
+
+        // Doc: https://msdn.microsoft.com/en-us/library/windows/desktop/bb761661(v=vs.85).aspx
+        const int EM_SETSEL = 0x00B1;
 
         /// <summary>
         /// Flag to avoid the TextChanged Event. Don't access directly, use Method 'ActionWithoutTextChanged(Action act)' instead.
@@ -257,16 +264,35 @@ namespace System.Windows.Forms
             base.OnTextChanged(e);
         }
 
+        protected override void WndProc(ref Message m)
+        {
+            // Prevent selection through Windows default controls. ("Select all" in context menu)
+            if (IsPlaceholderActive && m.Msg == EM_SETSEL) return;
+            base.WndProc(ref m);
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            // Prevents that the user can go through the placeholder with arrow keys and placeholder is not deletable with delete key
-            if (IsPlaceholderActive && (e.KeyCode == Keys.Left || e.KeyCode == Keys.Right || e.KeyCode == Keys.Up || e.KeyCode == Keys.Down || e.KeyCode == Keys.Delete))
-                e.Handled = true;
-
-            if (IsPlaceholderActive && (e.KeyCode == Keys.A && e.Modifiers.HasFlag(Keys.Control)))
+            if (IsPlaceholderActive)
             {
-                e.Handled = true;
-                e.SuppressKeyPress = true;
+                // Prevents navigating through the placeholder with navigation keys and placeholder is not deletable with delete key
+                if (e.KeyCode == Keys.Left ||
+                    e.KeyCode == Keys.Right ||
+                    e.KeyCode == Keys.Up ||
+                    e.KeyCode == Keys.Down ||
+                    e.KeyCode == Keys.Delete ||
+                    e.KeyCode == Keys.Home ||
+                    e.KeyCode == Keys.End ||
+                    e.KeyCode == Keys.Back)
+                {
+                    e.SuppressKeyPress = true;
+                }
+
+                // Prevent selecting the placeholder text
+                if (e.KeyCode == Keys.A && e.Modifiers.HasFlag(Keys.Control))
+                {
+                    e.SuppressKeyPress = true;
+                }
             }
 
             base.OnKeyDown(e);
