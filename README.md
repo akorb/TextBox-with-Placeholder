@@ -26,14 +26,14 @@ See CodeProject: http://www.codeproject.com/Articles/319910/Custom-TextBox-with-
 **Mono support**     
 Method 1 obviously doesn't work with Mono because it uses the Win32 API.     
 Method 2 throws an exception.     
-Mine works almost perfect. Only the cursor is able to move through the placeholder with clicking. I don't know why yet.     
+Mine works almost perfectly. Only the cursor is able to move through the placeholder with clicking. I don't know why yet.     
 
 **Customizable**      
 Method 1 is 0% customizable.      
 Method 2 is very well customizable. Additional to mine it can set the placeholder color while focused.       
-Mine can do the same as Method 2, except setting the color while focused (is this really necessary?).
+Mine can do the same as Method 2, except setting the color while focused.
 
 **Recommendations**     
-Use Method 1 if you only want to support Windows, like its behavior and the default light grey color is fine.    
-Use Method 2 if you only want to support Windows and to set the color of the placeholder while focused.    
+Use Method 1 if you only want to support Windows, are fine with its behavior and the default light grey color is fine.    
+Use Method 2 if you only want to support Windows and need to set the color of the placeholder while focused.    
 Use mine method if you want to support cross plattform.
